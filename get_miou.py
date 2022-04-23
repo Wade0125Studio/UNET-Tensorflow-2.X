@@ -1,41 +1,45 @@
 import os
 
 import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
+  except RuntimeError as e:
+    print(e)
 from PIL import Image
 from tqdm import tqdm
 
 from unet import Unet
 from utils.utils_metrics import compute_mIoU, show_results
 
-gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-for gpu in gpus:
-    tf.config.experimental.set_memory_growth(gpu, True)
+
 '''
-进行指标评估需要注意以下几点：
-1、该文件生成的图为灰度图，因为值比较小，按照JPG形式的图看是没有显示效果的，所以看到近似全黑的图是正常的。
-2、该文件计算的是验证集的miou，当前该库将测试集当作验证集使用，不单独划分测试集
-3、仅有按照VOC格式数据训练的模型可以利用这个文件进行miou的计算。
+進行指標評估需要注意以下幾點：
+1、該文件生成的圖為灰度圖，因為值比較小，按照JPG形式的圖看是沒有顯示效果的，所以看到近似全黑的圖是正常的。
+2、該文件計算的是驗證集的miou，當前該庫將測試集當作驗證集使用，不單獨劃分測試集
+3、僅有按照VOC格式數據訓練的模型可以利用這個文件進行miou的計算。
 '''
 if __name__ == "__main__":
     #---------------------------------------------------------------------------#
-    #   miou_mode用于指定该文件运行时计算的内容
-    #   miou_mode为0代表整个miou计算流程，包括获得预测结果、计算miou。
-    #   miou_mode为1代表仅仅获得预测结果。
-    #   miou_mode为2代表仅仅计算miou。
+    #   miou_mode用於指定該文件運行時計算的內容
+    #   miou_mode為0代表整個miou計算流程，包括獲得預測結果、計算miou。
+    #   miou_mode為1代表僅僅獲得預測結果。
+    #   miou_mode為2代表僅僅計算miou。
     #---------------------------------------------------------------------------#
     miou_mode       = 0
     #------------------------------#
-    #   分类个数+1、如2+1
+    #   分類個數+1、如2+1
     #------------------------------#
     num_classes     = 21
     #--------------------------------------------#
-    #   区分的种类，和json_to_dataset里面的一样
+    #   區分的種類，和json_to_dataset裡面的一樣
     #--------------------------------------------#
     name_classes    = ["background","aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
     # name_classes    = ["_background_","cat","dog"]
     #-------------------------------------------------------#
-    #   指向VOC数据集所在的文件夹
-    #   默认指向根目录下的VOC数据集
+    #   指向VOC數據集所在的文件夾
+    #   默認指向根目錄下的VOC數據集
     #-------------------------------------------------------#
     VOCdevkit_path  = 'VOCdevkit'
 

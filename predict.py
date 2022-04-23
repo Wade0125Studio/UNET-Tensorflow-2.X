@@ -8,13 +8,17 @@ import time
 import cv2
 import numpy as np
 import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
+  except RuntimeError as e:
+    print(e)
 from PIL import Image
 
 from unet import Unet
 
-gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-for gpu in gpus:
-    tf.config.experimental.set_memory_growth(gpu, True)
+
 
 if __name__ == "__main__":
     #-------------------------------------------------------------------------#

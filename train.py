@@ -4,6 +4,12 @@ from functools import partial
 
 import numpy as np
 import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
+  except RuntimeError as e:
+    print(e)
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import (EarlyStopping, LearningRateScheduler,
                                         TensorBoard)
@@ -18,9 +24,7 @@ from utils.dataloader import UnetDataset
 from utils.utils_fit import fit_one_epoch
 from utils.utils_metrics import Iou_score, f_score
 
-gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-for gpu in gpus:
-    tf.config.experimental.set_memory_growth(gpu, True)
+
  
 '''
 训练自己的语义分割模型一定需要注意以下几点：
